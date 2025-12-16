@@ -1,9 +1,10 @@
 #include "cachelab.h"
+#include <stdbool.h>
 
 typedef struct cache_line
 {
-    int valid;     //有效位
-    int tag;       //标记位
+    bool valid;     //有效位
+    unsigned long tag;       //标记位
     int time_tamp; //时间戳
 } Cache_line;
 
@@ -23,10 +24,10 @@ void Init_Cache(int s, int E, int b)
     cache->S = S;
     cache->E = E;
     cache->B = B;
-    cache->line = (Cache_line **)malloc(sizeof(Cache_line *) * S); //二维数组外层初始化： S 个
+    cache->line = (Cache_line **)malloc(sizeof(Cache_line *) * S); //二维数组外层初始化： S 个 set，每个set 将是一组 cacheline
     for (int i = 0; i < S; i++)
     {
-        cache->line[i] = (Cache_line *)malloc(sizeof(Cache_line) * E);
+        cache->line[i] = (Cache_line *)malloc(sizeof(Cache_line) * E); // 分配每个 set 里面 的 E 个 cacheline
         for (int j = 0; j < E; j++)
         {
             cache->line[i][j].valid = 0; //初始时，高速缓存是空的
@@ -34,10 +35,12 @@ void Init_Cache(int s, int E, int b)
             cache->line[i][j].time_tamp = 0;
         }
     
+    }
 }
-void update(int i, int op_s, int op_tag){
+void update(int i, int op_s, int op_tag) // op_s 是 操作对象所属的组索引 ， 下层的块只能 存进某个特定的 set ， 而LRU是针对 set 内部的eviction
+{ 
     cache->line[op_s][i].valid=1;
-    cache->line[op_s][i].tag = op_tag;
+    cache->line[op_s][i].tag = op_tag;  //要求传入高位tag位，
     for(int k = 0; k < cache->E; k++)
         if(cache->line[op_s][k].valid==1)
             cache->line[op_s][k].time_tamp++;
@@ -48,7 +51,7 @@ int find_LRU(int op_s)
 {
     int max_index = 0;
     int max_time_tamp = 0;
-    for(int i = 0 ; i < cahce->E ; i++)
+    for(int i = 0 ; i < cache->E ; i++)
     {
         if(cache->line[op_s][i].time_tamp > max_time_tamp)
         {
