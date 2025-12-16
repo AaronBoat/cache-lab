@@ -29,7 +29,7 @@ void Init_Cache(int s, int E, int b)
             cache->line[i][j].tag = -1;
             cache->line[i][j].time_tamp = 0;
         }
-    }
+    
 }
 void update(int i, int op_s, int op_tag){
     cache->line[op_s][i].valid=1;
@@ -38,6 +38,21 @@ void update(int i, int op_s, int op_tag){
         if(cache->line[op_s][k].valid==1)
             cache->line[op_s][k].time_tamp++;
     cache->line[op_s][i].time_tamp = 0;
+}
+
+int find_LRU(int op_s)
+{
+    int max_index = 0;
+    int max_time_tamp = 0;
+    for(int i = 0 ; i < cahce->E ; i++)
+    {
+        if(cache->line[op_s][i].time_tamp > max_time_tamp)
+        {
+            max_index = i;
+            max_time_tamp = cache->line[op_s][i].time_tamp ;
+        }
+    }
+    return max_index ;
 }
 int main()
 {
