@@ -15,6 +15,11 @@ typedef struct cache_
 } Cache; //整个cache 的结构 包含 S 个 set ， 每个 set 有 E 个缓存行， 每行是一个 B 位的块
 
 Cache  *cache; //实例化，一个指向 某个 Cache 的指针
+
+int hit_count = 0, miss_count = 0, eviction_count = 0; // 记录冲突不命中、缓存不命中
+int verbose = 0;                                       //是否打印详细信息
+char t[1000];
+
 void Init_Cache(int s, int E, int b)
 {
     int S = 1 << s; //set个数： 2 ^ s
@@ -140,8 +145,45 @@ void get_trace(int s, int E, int b)
     fclose(pFile);
 }
 
-int main()
+int main(int argc, char *argv[])    
 {
-    printSummary(0, 0, 0);
+    char opt;
+    int s, E, b;
+    /*
+     * s:S=2^s是组的个数
+     * E:每组中有多少行
+     * b:B=2^b每个缓冲块的字节数
+     */
+    while (-1 != (opt = getopt(argc, argv, "hvs:E:b:t:")))  //主程序读入命令行参数
+    {
+        switch (opt)
+        {
+        case 'h':
+            print_help();
+            exit(0);
+        case 'v':
+            verbose = 1;
+            break;
+        case 's':
+            s = atoi(optarg);
+            break;
+        case 'E':
+            E = atoi(optarg);
+            break;
+        case 'b':
+            b = atoi(optarg);
+            break;
+        case 't':
+            strcpy(t, optarg);
+            break;
+        default:
+            print_help();
+            exit(-1);
+        }
+    }
+    Init_Cache(s, E, b); //初始化一个cache
+    get_trace(s, E, b);
+    free_Cache();
+    printSummary(hit_count, miss_count, eviction_count);
     return 0;
 }
