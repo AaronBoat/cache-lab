@@ -39,15 +39,15 @@ void Init_Cache(int s, int E, int b)
 }
 void update(int i, int op_s, int op_tag) // op_s 是 操作对象所属的组索引 ， 下层的块只能 存进某个特定的 set ， 而LRU是针对 set 内部的eviction
 { 
-    cache->line[op_s][i].valid=1;
+    cache->line[op_s][i].valid=1;   //标记为有效
     cache->line[op_s][i].tag = op_tag;  //要求传入高位tag位，
     for(int k = 0; k < cache->E; k++)
         if(cache->line[op_s][k].valid==1)
-            cache->line[op_s][k].time_tamp++;
-    cache->line[op_s][i].time_tamp = 0;
+            cache->line[op_s][k].time_tamp++;   //每次更新所有时间戳++
+    cache->line[op_s][i].time_tamp = 0; //把自身时间戳重新置零
 }
 
-int find_LRU(int op_s)
+int find_LRU(int op_s)  //在同一个区块中寻找
 {
     int max_index = 0;
     int max_time_tamp = 0;
@@ -59,7 +59,17 @@ int find_LRU(int op_s)
             max_time_tamp = cache->line[op_s][i].time_tamp ;
         }
     }
-    return max_index ;
+    return max_index ; //找出最大时间戳对应的目录
+}
+
+int get_index(int op_s, int op_tag)
+{
+    for (int i = 0; i < cache->E; i++)
+    {
+        if (cache->line[op_s][i].valid && cache->line[op_s][i].tag == op_tag)
+            return i;
+    }
+    return -1;
 }
 int main()
 {
