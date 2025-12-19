@@ -106,6 +106,40 @@ void update_info(int op_tag, int op_s)  //更新缓存状态并且输出三种�
     }
 }
 
+void get_trace(int s, int E, int b)
+{
+    FILE *pFile;
+    pFile = fopen(t, "r");
+    if (pFile == NULL)
+    {
+        exit(-1);
+    }
+    char identifier;
+    unsigned address;
+    int size;
+    // Reading lines like " M 20,1" or "L 19,3"
+    while (fscanf(pFile, " %c %x,%d", &identifier, &address, &size) > 0) // I读不进来,忽略---size没啥用
+    {
+        //想办法先得到标记位和组序号
+        int op_tag = address >> (s + b);
+        int op_s = (address >> b) & ((unsigned)(-1) >> (8 * sizeof(unsigned) - s));
+        switch (identifier)
+        {
+        case 'M': //一次存储一次加载
+            update_info(op_tag, op_s);
+            update_info(op_tag, op_s);
+            break;
+        case 'L':
+            update_info(op_tag, op_s);
+            break;
+        case 'S':
+            update_info(op_tag, op_s);
+            break;
+        }
+    }
+    fclose(pFile);
+}
+
 int main()
 {
     printSummary(0, 0, 0);
