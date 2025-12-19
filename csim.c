@@ -1,6 +1,9 @@
 #include "cachelab.h"
 #include <stdbool.h>
-
+#include <stdlib.h>   
+#include <stdio.h>   
+#include <getopt.h>   
+#include <string.h> 
 typedef struct cache_line
 {
     bool valid;     //有效位
