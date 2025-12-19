@@ -42,6 +42,16 @@ void Init_Cache(int s, int E, int b)
     
     }
 }
+void free_Cache()
+{
+    int S = cache->S;
+    for (int i = 0; i < S; i++)
+    {
+        free(cache->line[i]);
+    }
+    free(cache->line);
+    free(cache);
+}
 void update(int i, int op_s, int op_tag) // op_s 是 操作对象所属的组索引 ， 下层的块只能 存进某个特定的 set ， 而LRU是针对 set 内部的eviction
 { 
     cache->line[op_s][i].valid=1;   //标记为有效
