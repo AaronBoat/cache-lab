@@ -62,15 +62,50 @@ int find_LRU(int op_s)  //在同一个区块中寻找
     return max_index ; //找出最大时间戳对应的目录
 }
 
+int is_full(int op_s)   //判断set 是否已经填满
+{
+    for (int i = 0; i < cache->E; i++)
+    {
+        if (cache->line[op_s][i].valid == 0)
+            return i;   //冷不命中 -> 在第一个空的 line 填入即可
+    }
+    return -1;  //容量不命中 -> 需要 eviction
+}
+
 int get_index(int op_s, int op_tag)
 {
     for (int i = 0; i < cache->E; i++)
     {
-        if (cache->line[op_s][i].valid && cache->line[op_s][i].tag == op_tag)
+        if (cache->line[op_s][i].valid && cache->line[op_s][i].tag == op_tag)   //判断命中逻辑
             return i;
     }
-    return -1;
+    return -1;  //miss逻辑
 }
+
+void update_info(int op_tag, int op_s)  //更新缓存状态并且输出三种命中情况
+{
+    int index = get_index(op_s, op_tag);
+    if (index == -1)
+    {
+        miss_count++;
+        if (verbose)
+            printf("miss ");
+        int i = is_full(op_s);
+        if(i==-1){
+            eviction_count++;
+            if(verbose) printf("eviction");
+            i = find_LRU(op_s);
+        }
+        update(i,op_s,op_tag);
+    }
+    else{
+        hit_count++;
+        if(verbose)
+            printf("hit");
+        update(index,op_s,op_tag);    
+    }
+}
+
 int main()
 {
     printSummary(0, 0, 0);
