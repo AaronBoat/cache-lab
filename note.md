@@ -38,5 +38,21 @@ cache的每一行 额外存储一份 **时间戳**：
 缓存是32组，每组1行 8个int 
 那么8 * 8 分块的话，就不会溢出
 
+```
+结果：
+Function 0 (2 total)
+Step 1: Validating and generating memory traces
+Step 2: Evaluating performance (s=5, E=1, b=5)
+func 0 (Transpose submission): hits:1709, misses:344, evictions:312
+
+Function 1 (2 total)
+Step 1: Validating and generating memory traces
+Step 2: Evaluating performance (s=5, E=1, b=5)
+func 1 (Simple row-wise scan transpose): hits:869, misses:1184, evictions:1152
+
+Summary for official submission (func 0): correctness=1 misses=344
+```
+
 3. 对角线上的块还是会 A B之间冲突
 写A[0:8][0:8] 和 B上的相同位置 还是会冲突？只是猜测，不能确定实际上两个数组的间隔
+用本地局部变量（寄存器） 存储A上的每行8个，这样的话A被驱逐不影响我们继续正常从寄存器写入B
