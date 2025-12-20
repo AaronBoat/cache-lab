@@ -75,3 +75,15 @@ Summary for official submission (func 0): correctness=1 misses=344
 第五步，把A的右下复制给B的右下
 ## 结果2
 ![alt text](image-2.png)
+
+## 61 * 67
+基础尝试 普通分块16 * 16 ， 已经足够性能
+
+![alt text](image-3.png)
+
+
+# 参考文献：
+https://zhuanlan.zhihu.com/p/484657229 - 有的地方实在想不通或者想不到有所参考，但是所有思路都是学习会了自己打一遍的
+
+# driver 统一测试报告
+![alt text](image-4.png)
