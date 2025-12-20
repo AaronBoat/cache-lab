@@ -56,3 +56,6 @@ Summary for official submission (func 0): correctness=1 misses=344
 3. 对角线上的块还是会 A B之间冲突
 写A[0:8][0:8] 和 B上的相同位置 还是会冲突？只是猜测，不能确定实际上两个数组的间隔
 用本地局部变量（寄存器） 存储A上的每行8个，这样的话A被驱逐不影响我们继续正常从寄存器写入B
+
+## 结果1
+![alt text](image-1.png)
